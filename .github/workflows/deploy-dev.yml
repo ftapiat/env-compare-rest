@@ -1,0 +1,17 @@
+name: Deploy on dev server
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deployment:
+    name: deploy
+    runs-on: ubuntu-latest
+    environment: prod
+    strategy:
+      matrix:
+        node-version: [ 16.x ]
+    steps:
+      - uses: ftapiat/env-compare-sls-deploy-action@v1
