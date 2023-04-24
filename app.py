@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route("/", methods=["GET"])
 def home():
     ruta = url_for('print_hi', name='bienvenido!')
-    res = requests.get(f'{DOMAIN}{ruta}')
+    res = requests.get(f'{ROOT_URL}{ruta}')
     return res.text
 
 

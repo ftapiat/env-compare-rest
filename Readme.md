@@ -35,7 +35,6 @@ sls wsgi serve
 ```
 
 
-
 ## Otros comandos
 
 - Guardar dependencias en un archivo requirements.txt
