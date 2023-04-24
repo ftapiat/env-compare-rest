@@ -9,7 +9,7 @@ jobs:
   deployment:
     name: deploy
     runs-on: ubuntu-latest
-    environment: prod
+    environment: dev
     strategy:
       matrix:
         node-version: [ 16.x ]
