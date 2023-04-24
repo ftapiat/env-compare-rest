@@ -1,4 +1,5 @@
 service: env-compare-rest
+frameworkVersion: '3'
 
 provider:
   name: aws
@@ -7,6 +8,7 @@ provider:
   memorySize: 128
 plugins:
   - serverless-wsgi
+  - serverless-dotenv-plugin
   - serverless-python-requirements
 custom:
   wsgi:
@@ -18,3 +20,9 @@ functions:
     events:
       - http: ANY /
       - http: ANY /{proxy+}
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!venv/**'
+    - '!.github/**'

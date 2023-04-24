@@ -34,6 +34,13 @@ npm install
 sls wsgi serve
 ```
 
+- Desplegar a AWS (Esto requerirá un archivo .env con el stage [Ejemplo, .env.dev])
+```bash
+sls deploy
+
+# O espeficicando el stage: dev, prod, etc
+sls deploy --stage dev
+```
 
 
 ## Otros comandos

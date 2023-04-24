@@ -5,7 +5,9 @@
 instance/*
 !instance/.gitignore
 .webassets-cache
-.env
+.env.dev
+.env.prod
+.env.local
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
@@ -422,3 +424,5 @@ fabric.properties
 .serverless
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm,flask,serverless,node
+
+.secrets
