@@ -18,3 +18,9 @@ functions:
     events:
       - http: ANY /
       - http: ANY /{proxy+}
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!venv/**'
+    - '!.github/**'
