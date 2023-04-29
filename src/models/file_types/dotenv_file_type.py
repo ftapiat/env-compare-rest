@@ -1,6 +1,6 @@
 import re
+from ..file_values import FileValues
 from .file_type_enum import FileTypeEnum
-from ..files import FileValues
 
 
 def get_non_empty_lines(values: list[str]) -> list[{int: str}]:
