@@ -1,6 +1,6 @@
 class ComparableFile(object):
-     def __init__(self, file):
-         self.name = file["name"]
+     def __init__(self, file, default_name=None):
+         self.name = file["name"] or default_name
          self.content = file["content"]
 
      @property

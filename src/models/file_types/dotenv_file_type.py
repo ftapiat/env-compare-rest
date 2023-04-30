@@ -1,18 +1,19 @@
 import re
+from typing import Any
+
 from ..file_values import FileValues
 from .file_type_enum import FileTypeEnum
 
 
 def get_non_empty_lines(values: list[str]) -> list[{int: str}]:
     """
-    Will remove empty lines or lines that are comments.
-    Also, will add the number of the line with value.
+    Remove empty lines or lines that are comments.
     """
     non_empty = []
     for index, value in enumerate(values):
         if value.strip() != "" and not is_line_a_comment(value):
             non_empty.append({
-                "index": index,
+                "line": index + 1, # Line number
                 "value": value
             })
     return non_empty
@@ -46,21 +47,35 @@ class DotenvFileType:
         self.type = FileTypeEnum.DOTENV
         self.content = content
 
+        # Split each value in string by new line
+        content = content.split("\n")
+        self.lines = get_non_empty_lines(content)
+
     def is_valid(self) -> bool:
         """
         Checks if the content is a valid dotenv file.
         """
-        # Split each value in string by new line
-        content = self.content.split("\n")
-        lines = get_non_empty_lines(content)
         # Iterate over each line and check if it is a key value pair
         # If it is not, return false
-        for line in lines:
+        for line in self.lines:
             if not is_line_a_key_value_pair(line["value"]):
                 return False
 
         # At this point, all lines are key value pairs
         return True
 
-    def get_values(self) -> FileValues:
-        pass
+    def get_values(self, file_name: str) -> FileValues:
+        """
+        Assumes it's already a valid dotenv file and returns the values.
+        :param file_name:
+        :return: Key value pairs of the file
+        """
+        values = []
+        for line in self.lines:
+            key_value: list[str, Any] = line["value"].split("=")
+            values.append({
+                "key": key_value[0].strip(),
+                "value": key_value[1]
+            })
+
+        return FileValues(file_name, self.type, values)

@@ -29,18 +29,20 @@ def compare_files():
     # Todo Validate structure
     files = UploadedFiles(request.get_json()["files"])
 
-    return make_json_response(files.serialized)
-
     def make_file_request(file):
         return requests.post(get_server_route(url_for("get_file_values")), json={
-            "file": obj_to_json(file)
+            "file": file.serialized
         })
 
-    res_file_1 = make_file_request(files.file_1)
-    # return obj_to_json(res_file_1)
-    return res_file_1.json()
-    # Todo file 2
+    file_1_values = make_file_request(files.file_1).json()["data"]
+    file_2_values = make_file_request(files.file_2).json()["data"]
+
     # Todo compare files
+    return make_json_response({
+        "file_1": file_1_values,
+        "file_2": file_2_values
+    })
+
     # Todo return result
 
 
@@ -49,6 +51,7 @@ def get_file_values():
     # Todo Validate structure
     file = request.get_json()["file"]
     content = file["content"]
+    file_name = file["name"]
 
     # Get file type
     get_type_request = requests.post(get_server_route(url_for("get_file_type")), json={
@@ -56,15 +59,14 @@ def get_file_values():
     })
     file_type = get_type_request.json()["data"]
 
-    # Todo get values
     if file_type == FileTypeEnum.DOTENV.value:
-        values = DotenvFileType(content).get_values()
+        values = DotenvFileType(content).get_values(file_name)
     else:
         # Null
         # Todo Throw error
         values = None
 
-    return make_json_response(values)
+    return make_json_response(values.serialized)
 
 
 @app.route("/file/type/get", methods=["POST"])
