@@ -1,9 +1,12 @@
 import requests
 from flask import Flask, url_for, request, json
+
 from src.models.responses import AppResponse
 from src.models.files import UploadedFiles
 from src.models.file_types import FileTypeEnum, DotenvFileType
-from src.helpers import get_server_route, obj_to_json
+from src.models.file_values import FileValues
+from src.models.comparer import ComparedValues
+from src.helpers import get_server_route
 
 app = Flask(__name__)
 
@@ -34,16 +37,15 @@ def compare_files():
             "file": file.serialized
         })
 
-    file_1_values = make_file_request(files.file_1).json()["data"]
-    file_2_values = make_file_request(files.file_2).json()["data"]
-
-    # Todo compare files
+    file_1_values = FileValues.from_dict(make_file_request(files.file_1).json()["data"])
+    file_2_values = FileValues.from_dict(make_file_request(files.file_2).json()["data"])
     return make_json_response({
-        "file_1": file_1_values,
-        "file_2": file_2_values
+        "values": {
+            "file_1": file_1_values.serialized,
+            "file_2": file_2_values.serialized
+        },
+        "differences": ComparedValues.from_files(file_1_values, file_2_values).serialized
     })
-
-    # Todo return result
 
 
 @app.route("/file/values/get", methods=["POST"])

@@ -1,3 +1,5 @@
+from typing import Any
+
 from ..file_types import FileTypeEnum
 
 
@@ -20,3 +22,7 @@ class FileValues:
             "file_type": self.file_type.value,
             "values": self.values
         }
+
+    @staticmethod
+    def from_dict(data: dict[str, Any]):
+        return FileValues(data["file_name"], FileTypeEnum(data["file_type"]), data["values"])
