@@ -3,7 +3,7 @@ from flask import Flask, url_for, request, json
 
 from src.models.responses import AppResponse
 from src.models.files import UploadedFiles
-from src.models.file_types import FileTypeEnum, DotenvFileType
+from src.models.file_types import FileTypeEnum, DotenvFileType, OcYamlEnvObjFileType
 from src.models.file_values import FileValues
 from src.models.comparer import ComparedValues
 from src.helpers import get_server_route
@@ -63,6 +63,8 @@ def get_file_values():
 
     if file_type == FileTypeEnum.DOTENV.value:
         values = DotenvFileType(content).get_values(file_name)
+    elif file_type == FileTypeEnum.OC_YAML_ENV_OBJ.value:
+        values = OcYamlEnvObjFileType(content).get_values(file_name)
     else:
         # Null
         # Todo Throw error
@@ -83,7 +85,9 @@ def get_file_type():
         return is_type_request.json()["data"]
 
     types_to_check = [
-        FileTypeEnum.DOTENV.value
+        FileTypeEnum.DOTENV.value,
+        FileTypeEnum.OC_YAML_ENV_OBJ.value,
+        FileTypeEnum.OC_YAML_ENV_LIST.value,
     ]
 
     for t in types_to_check:
@@ -100,5 +104,8 @@ def is_file_type(file_type):
     content = request.get_json()["content"]
     if file_type == FileTypeEnum.DOTENV.value:
         return make_json_response(DotenvFileType(content).is_valid())
+    elif file_type == FileTypeEnum.OC_YAML_ENV_OBJ.value:
+        return make_json_response(OcYamlEnvObjFileType(content).is_valid())
 
     return make_json_response(False)
+
