@@ -1,12 +1,15 @@
 service: env-compare-rest
 frameworkVersion: '3'
 
+useDotenv: true
+
 provider:
   name: aws
   runtime: python3.9
-  region: sa-east-1
+  region: us-east-1
   memorySize: 128
 plugins:
+  - serverless-aws-function-url-custom-domain
   - serverless-wsgi
   - serverless-dotenv-plugin
   - serverless-python-requirements
@@ -14,12 +17,17 @@ custom:
   wsgi:
     app: app.app
     packRequirements: false
+  urlDomain:
+    apiDomain: ${env:API_DOMAIN}
+    hostedZoneName: ${env:HOSTED_ZONE_NAME}
+    certificateArn: ${env:CERTIFICATE_ARN}
 functions:
   app:
     handler: wsgi_handler.handler
     events:
       - http: ANY /
       - http: ANY /{proxy+}
+    url: true
 
 package:
   patterns:

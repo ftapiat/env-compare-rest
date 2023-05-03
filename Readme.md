@@ -39,7 +39,7 @@ sls wsgi serve
 sls deploy
 
 # O espeficicando el stage: dev, prod, etc
-sls deploy --stage dev
+sls deploy --stage dev --verbose 
 ```
 
 
@@ -48,4 +48,9 @@ sls deploy --stage dev
 - Guardar dependencias en un archivo requirements.txt
 ```bash
 pip freeze > requirements.txt
+```
+
+- Elimina los servicios registrados por serverless
+```bash
+sls remove --stage dev
 ```

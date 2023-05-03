@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "serverless-aws-function-url-custom-domain": "^0.9.25",
     "serverless-dotenv-plugin": "^6.0.0",
     "serverless-python-requirements": "^6.0.0",
     "serverless-wsgi": "^3.0.2"
