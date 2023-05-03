@@ -9,9 +9,9 @@ provider:
   region: us-east-1
   memorySize: 128
 plugins:
+  - serverless-dotenv-plugin
   - serverless-aws-function-url-custom-domain
   - serverless-wsgi
-  - serverless-dotenv-plugin
   - serverless-python-requirements
 custom:
   wsgi:

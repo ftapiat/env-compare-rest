@@ -76,25 +76,29 @@ def get_file_type():
     # Todo Validate structure Has "content" key
     content = request.get_json()["content"]
 
-    def make_is_type_request(endpoint, file_content) -> bool:
-        is_type_request = requests.post(get_server_route(url_for(endpoint)), json={
+    def make_is_type_request(file_type, file_content) -> bool:
+        is_type_request = requests.post(get_server_route(url_for("is_file_type", file_type=file_type)), json={
             "content": file_content
         })
         return is_type_request.json()["data"]
 
-    is_dotenv = make_is_type_request("file_type_is_dotenv", content)
+    types_to_check = [
+        FileTypeEnum.DOTENV.value
+    ]
 
-    if is_dotenv:
-        file_type = FileTypeEnum.DOTENV
-    else:
-        # Todo add more file types
-        file_type = FileTypeEnum.NONE
+    for t in types_to_check:
+        if make_is_type_request(t, content):
+            return make_json_response(t)
 
-    return make_json_response(file_type.value)
+    return make_json_response(FileTypeEnum.NONE.value)  # Todo error?
 
 
-@app.route("/file/type/is-dotenv", methods=["POST"])
-def file_type_is_dotenv():
-    # Todo Validate structure: Has "content" key
+@app.route("/file/type/is/<file_type>", methods=["POST"])
+def is_file_type(file_type):
+    # Todo validate file_type is correct.
+    # Todo Validate structure: Has "content" key.
     content = request.get_json()["content"]
-    return make_json_response(DotenvFileType(content).is_valid())
+    if file_type == FileTypeEnum.DOTENV.value:
+        return make_json_response(DotenvFileType(content).is_valid())
+
+    return make_json_response(False)
