@@ -1,10 +1,10 @@
 from typing import Any
 
-from ..file_types import FileTypeEnum
+from ..file_types import FileTypeName
 
 
 class FileValues:
-    def __init__(self, file_name: str, file_type: FileTypeEnum, values: list[dict[str, str]]):
+    def __init__(self, file_name: str, file_type: FileTypeName, values: list[dict[str, str]]):
         """
         Represents the values of an env file.
         :param file_name: Name of the file uploaded. Could be specified by the user or the default name.
@@ -25,4 +25,4 @@ class FileValues:
 
     @staticmethod
     def from_dict(data: dict[str, Any]):
-        return FileValues(data["file_name"], FileTypeEnum(data["file_type"]), data["values"])
+        return FileValues(data["file_name"], FileTypeName(data["file_type"]), data["values"])

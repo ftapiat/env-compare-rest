@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
 from ..file_values import FileValues
-from .file_type_enum import FileTypeEnum
+from .file_type_name import FileTypeName
 
 
 class FileType(ABC):
-    def __init__(self, file_type: FileTypeEnum, content: str):
-        self.type = file_type
+    def __init__(self, type_name: FileTypeName, content: str):
+        self.type_name = type_name
         self.content = content
 
     @abstractmethod

@@ -3,13 +3,13 @@ from typing import Any
 from abc import ABC
 
 from ..file_values import FileValues
-from .file_type_enum import FileTypeEnum
+from .file_type_name import FileTypeName
 from .file_type import FileType
 
 
 class DotenvFileType(FileType, ABC):
     def __init__(self, content: str):
-        super().__init__(FileTypeEnum.DOTENV, content)
+        super().__init__(FileTypeName.DOTENV, content)
         # Split each value in string by new line
         content = content.split("\n")
         self.lines = get_non_empty_lines(content)

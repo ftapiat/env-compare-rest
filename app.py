@@ -3,7 +3,7 @@ from flask import Flask, url_for, request, json
 
 from src.models.responses import AppResponse
 from src.models.files import UploadedFiles
-from src.models.file_types import FileTypeEnum, DotenvFileType, OcYamlEnvObjFileType
+from src.models.file_types import FileTypeName, DotenvFileType, OcYamlEnvObjFileType
 from src.models.file_values import FileValues
 from src.models.comparer import ComparedValues
 from src.helpers import get_server_route
@@ -59,11 +59,11 @@ def get_file_values():
     get_type_request = requests.post(get_server_route(url_for("get_file_type")), json={
         "content": content
     })
-    file_type = get_type_request.json()["data"]
+    type_name = get_type_request.json()["data"]
 
-    if file_type == FileTypeEnum.DOTENV.value:
+    if type_name == FileTypeName.DOTENV.value:
         values = DotenvFileType(content).get_values(file_name)
-    elif file_type == FileTypeEnum.OC_YAML_ENV_OBJ.value:
+    elif type_name == FileTypeName.OC_YAML_ENV_OBJ.value:
         values = OcYamlEnvObjFileType(content).get_values(file_name)
     else:
         # Null
@@ -78,33 +78,33 @@ def get_file_type():
     # Todo Validate structure Has "content" key
     content = request.get_json()["content"]
 
-    def make_is_type_request(file_type, file_content) -> bool:
-        is_type_request = requests.post(get_server_route(url_for("is_file_type", file_type=file_type)), json={
+    def make_is_type_request(type_name, file_content) -> bool:
+        is_type_request = requests.post(get_server_route(url_for("is_file_type", type_name=type_name)), json={
             "content": file_content
         })
         return is_type_request.json()["data"]
 
     types_to_check = [
-        FileTypeEnum.DOTENV.value,
-        FileTypeEnum.OC_YAML_ENV_OBJ.value,
-        FileTypeEnum.OC_YAML_ENV_LIST.value,
+        FileTypeName.DOTENV.value,
+        FileTypeName.OC_YAML_ENV_OBJ.value,
+        FileTypeName.OC_YAML_ENV_LIST.value,
     ]
 
     for t in types_to_check:
         if make_is_type_request(t, content):
             return make_json_response(t)
 
-    return make_json_response(FileTypeEnum.NONE.value)  # Todo error?
+    return make_json_response(FileTypeName.NONE.value)  # Todo error?
 
 
-@app.route("/file/type/is/<file_type>", methods=["POST"])
-def is_file_type(file_type):
-    # Todo validate file_type is correct.
+@app.route("/file/type/is/<type_name>", methods=["POST"])
+def is_file_type(type_name):
+    # Todo validate type_name is correct.
     # Todo Validate structure: Has "content" key.
     content = request.get_json()["content"]
-    if file_type == FileTypeEnum.DOTENV.value:
+    if type_name == FileTypeName.DOTENV.value:
         return make_json_response(DotenvFileType(content).is_valid())
-    elif file_type == FileTypeEnum.OC_YAML_ENV_OBJ.value:
+    elif type_name == FileTypeName.OC_YAML_ENV_OBJ.value:
         return make_json_response(OcYamlEnvObjFileType(content).is_valid())
 
     return make_json_response(False)
