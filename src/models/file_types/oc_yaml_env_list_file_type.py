@@ -2,14 +2,14 @@ import yaml
 from abc import ABC
 
 from ..file_values import FileValues
-from .file_type_enum import FileTypeEnum
+from .file_type_name import FileTypeName
 from .file_type import FileType
 from .helpers import openshift_list_has_valid_structure, openshift_get_values_from_list
 
 
 class OcYamlEnvListFileType(FileType, ABC):
     def __init__(self, content: str):
-        file_type = FileTypeEnum.OC_YAML_ENV_LIST
+        file_type = FileTypeName.OC_YAML_ENV_LIST
         super().__init__(file_type, content)
 
     def is_valid(self) -> bool:
