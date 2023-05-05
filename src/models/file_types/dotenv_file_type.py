@@ -41,7 +41,7 @@ class DotenvFileType(FileType, ABC):
                 "value": key_value[1]
             })
 
-        return FileValues(file_name, self.type, values)
+        return FileValues(file_name, self.type_name, values)
 
 
 def get_non_empty_lines(values: list[str]) -> list[{int: str}]:

@@ -39,4 +39,4 @@ class OcYamlEnvObjFileType(FileType, ABC):
         """
         yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
         values = openshift_get_values_from_list(yaml_content["env"])
-        return FileValues(file_name, self.type, values)
+        return FileValues(file_name, self.type_name, values)

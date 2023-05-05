@@ -37,8 +37,12 @@ def compare_files():
             "file": file.serialized
         })
 
-    file_1_values = FileValues.from_dict(make_file_request(files.file_1).json()["data"])
-    file_2_values = FileValues.from_dict(make_file_request(files.file_2).json()["data"])
+    file_1_response = make_file_request(files.file_1).json()
+    file_1_values = FileValues.from_dict(file_1_response["data"])
+
+    file_2_response = make_file_request(files.file_2).json()
+    file_2_values = FileValues.from_dict(file_2_response["data"])
+
     return make_json_response({
         "values": {
             "file_1": file_1_values.serialized,
