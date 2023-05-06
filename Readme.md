@@ -27,12 +27,16 @@ npm install -g serverless
 npm install
 ```
 
+- Crear archivo .env con las variables de entorno
+```bash
+cp .env.example .env.local
+```
+
 ## Ejecución
 
 - Ejecutar localmente
 ```bash
-sls wsgi serve
-# Agregar [--stage local] si da error de variables de entorno y el archivo .env.local ya existe.
+sls wsgi serve --stage local
 # Agregar [-p NUMERO] para cambiar el puerto
 ```
 
