@@ -6,6 +6,7 @@ from src.models.files import UploadedFiles
 from src.models.file_types import FileTypeName, FileTypeFactory
 from src.models.file_values import FileValues
 from src.models.comparer import ComparedValues
+from src.models.values import UploadedValues
 from src.helpers import get_server_route
 
 app = Flask(__name__)
@@ -27,8 +28,8 @@ def print_hi(name):
     return f"Hi, {name}"
 
 
-@app.route("/compare-files", methods=["POST"])
-def compare_files():
+@app.route("/compare/files", methods=["POST"])
+def get_file_differences():
     # Todo Validate structure
     files = UploadedFiles(request.get_json()["files"])
 
@@ -43,12 +44,23 @@ def compare_files():
     file_2_response = make_file_request(files.file_2).json()
     file_2_values = FileValues.from_dict(file_2_response["data"])
 
+    def make_differences_request(values_file_1: FileValues, values_file_2: FileValues):
+        return requests.post(get_server_route(url_for("get_value_differences")), json={
+            "values": [
+                values_file_1.serialized,
+                values_file_2.serialized,
+            ]
+        })
+
+    differences_response = make_differences_request(file_1_values, file_2_values).json()
+    differences_value = differences_response["data"]
+
     return make_json_response({
         "values": {
             "file_1": file_1_values.serialized,
             "file_2": file_2_values.serialized
         },
-        "differences": ComparedValues.from_files(file_1_values, file_2_values).serialized
+        "differences": differences_value # Already serialized
     })
 
 
@@ -107,3 +119,10 @@ def is_file_type(type_name):
     except Exception as e:
         # Todo Throw error
         return make_json_response(False)
+
+@app.route("/compare/values", methods=["POST"])
+def get_value_differences():
+    # Todo Validate structure
+    values = UploadedValues(request.get_json()["values"])
+    differences = ComparedValues.from_files(values.file_1, values.file_2)
+    return make_json_response(differences.serialized)
