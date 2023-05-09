@@ -60,7 +60,7 @@ def get_file_differences():
             "file_1": file_1_values.serialized,
             "file_2": file_2_values.serialized
         },
-        "differences": differences_value # Already serialized
+        "differences": differences_value  # Already serialized
     })
 
 
@@ -119,6 +119,7 @@ def is_file_type(type_name):
     except Exception as e:
         # Todo Throw error
         return make_json_response(False)
+
 
 @app.route("/compare/values", methods=["POST"])
 def get_value_differences():
