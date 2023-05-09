@@ -5,7 +5,8 @@ class ValueDifferencesContent:
     def __init__(self, string: str, index_differences: list[int]):
         """
         :param string: Value used in the line of one file.
-        :param index_differences: Differences found in the value when compared to the other value (from the second file).
+        :param index_differences: Differences found in the value when compared to the other value
+        (from the second file).
         """
         self.string = string
         self.index_differences = index_differences
