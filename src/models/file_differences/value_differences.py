@@ -45,11 +45,14 @@ class ValueDifferencesGenerator:
         self.file_1_values_list = file_1_values_list
         self.file_2_values_list = file_2_values_list
 
-    def generate_ordered_list(self) -> list[ValueDifferences]:
-        ordered_keys = sorted(self.get_similar_key_values())
-        return self.get_differences_by_keys(ordered_keys)
+    def generate_list(self) -> list[ValueDifferences]:
+        return self.__get_differences_by_keys(self.__get_similar_key_values())
 
-    def get_similar_key_values(self) -> list[str]:
+    def generate_ordered_list(self) -> list[ValueDifferences]:
+        ordered_keys = sorted(self.__get_similar_key_values())
+        return self.__get_differences_by_keys(ordered_keys)
+
+    def __get_similar_key_values(self) -> list[str]:
         key = "key"  # Todo make this dynamic as a class property
         return [
             item[key]
@@ -59,17 +62,17 @@ class ValueDifferencesGenerator:
             ]
         ]
 
-    def get_differences_by_keys(self, keys_to_compare: list[str]) -> list[ValueDifferences]:
+    def __get_differences_by_keys(self, keys_to_compare: list[str]) -> list[ValueDifferences]:
         return [
-            self.get_differences_by_key(key)
+            self.__get_differences_by_key(key)
             for key in keys_to_compare
         ]
 
-    def get_differences_by_key(self, key: str) -> ValueDifferences:
-        differences = self.get_files_differences_by_key(key)
+    def __get_differences_by_key(self, key: str) -> ValueDifferences:
+        differences = self.__get_files_differences_by_key(key)
         return ValueDifferences(key, differences["value_file_1"], differences["value_file_2"])
 
-    def get_files_differences_by_key(self, key: str) -> dict[str, ValueDifferencesContent]:
+    def __get_files_differences_by_key(self, key: str) -> dict[str, ValueDifferencesContent]:
         value_file_1 = get_value_by_key(key, self.file_1_values_list)
         value_file_2 = get_value_by_key(key, self.file_2_values_list)
         indexes = get_index_differences(value_file_1, value_file_2)

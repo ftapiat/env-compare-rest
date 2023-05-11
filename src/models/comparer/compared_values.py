@@ -18,5 +18,5 @@ class ComparedValues:
     def from_files(file_1_values: FileValues, file_2_values: FileValues) -> "ComparedValues":
         key_differences = KeyDifferencesGenerator(file_1_values.values, file_2_values.values).generate()
         value_differences = ValueDifferencesGenerator(file_1_values.values,
-                                                      file_2_values.values).generate_ordered_list()
+                                                      file_2_values.values).generate_list()
         return ComparedValues(key_differences, value_differences)
