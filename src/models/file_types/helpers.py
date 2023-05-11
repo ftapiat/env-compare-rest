@@ -26,6 +26,8 @@ def openshift_get_values_from_list(values: list) -> list[dict[str, str]]:
 def format_openshift_value_structure(value: dict) -> dict[str, str]:
     if "value" not in value:
         value["value"] = ""
+    else:
+        value["value"] = str(value["value"])
 
     return {
         "key": value["name"],

@@ -38,7 +38,7 @@ class DotenvFileType(FileType, ABC):
             key_value: list[str, Any] = line["value"].split("=")
             values.append({
                 "key": key_value[0].strip(),
-                "value": key_value[1]
+                "value": str(key_value[1])
             })
 
         return FileValues(file_name, self.type_name, values)
