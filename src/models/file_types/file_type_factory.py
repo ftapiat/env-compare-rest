@@ -3,6 +3,7 @@ from .file_type import FileType
 from .dotenv_file_type import DotenvFileType
 from .oc_yaml_env_obj_file_type import OcYamlEnvObjFileType
 from .oc_yaml_env_list_file_type import OcYamlEnvListFileType
+from .oc_yaml_configmap_file_type import OcYamlConfigmapFileType
 
 
 class FileTypeFactory:
@@ -14,5 +15,8 @@ class FileTypeFactory:
             return OcYamlEnvObjFileType(content)
         elif type_name == FileTypeName.OC_YAML_ENV_LIST:
             return OcYamlEnvListFileType(content)
+        elif type_name == FileTypeName.OC_YAML_CONFIGMAP:
+            return OcYamlConfigmapFileType(content)
         else:
+            print("Invalid file type.")
             raise Exception("Invalid file type.")

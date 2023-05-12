@@ -77,12 +77,12 @@ def get_file_values():
     })
     type_name = get_type_request.json()["data"]
 
-    try:
-        values = FileTypeFactory.from_type(FileTypeName(type_name), content).get_values(file_name)
-        return make_json_response(values.serialized)
-    except Exception as e:
-        # Todo Throw error
-        return make_json_response(None)
+    # try:
+    values = FileTypeFactory.from_type(FileTypeName(type_name), content).get_values(file_name)
+    return make_json_response(values.serialized)
+# except Exception as e:
+#     Todo Throw error
+# return make_json_response(None)
 
 
 @app.route("/file/type/get", methods=["POST"])
@@ -100,6 +100,7 @@ def get_file_type():
         FileTypeName.DOTENV.value,
         FileTypeName.OC_YAML_ENV_OBJ.value,
         FileTypeName.OC_YAML_ENV_LIST.value,
+        FileTypeName.OC_YAML_CONFIGMAP.value
     ]
 
     for t in types_to_check:
