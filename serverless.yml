@@ -23,6 +23,7 @@ functions:
       - http: ANY /
       - http: ANY /{proxy+}
     timeout: 15
+    url: true
 
 package:
   patterns:
