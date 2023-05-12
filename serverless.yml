@@ -10,24 +10,18 @@ provider:
   memorySize: 1536
 plugins:
   - serverless-dotenv-plugin
-  - serverless-aws-function-url-custom-domain
   - serverless-wsgi
   - serverless-python-requirements
 custom:
   wsgi:
     app: app.app
     packRequirements: false
-  urlDomain:
-    apiDomain: ${env:API_DOMAIN}
-    hostedZoneName: ${env:HOSTED_ZONE_NAME}
-    certificateArn: ${env:CERTIFICATE_ARN}
 functions:
   app:
     handler: wsgi_handler.handler
     events:
       - http: ANY /
       - http: ANY /{proxy+}
-    url: true
     timeout: 15
 
 package:
