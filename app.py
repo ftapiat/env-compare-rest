@@ -8,6 +8,7 @@ from src.models.file_values import FileValues
 from src.models.comparer import ComparedValues
 from src.models.values import UploadedValues
 from src.helpers import get_server_route
+from src.requests import IsFileTypeRequest
 
 app = Flask(__name__)
 
@@ -112,8 +113,10 @@ def get_file_type():
 
 @app.route("/file/type/is/<type_name>", methods=["POST"])
 def is_file_type(type_name):
-    # Todo validate type_name is correct.
-    # Todo Validate structure: Has "content" key.
+    errors = IsFileTypeRequest().validate(request.get_json() | {"type_name": type_name})
+    if errors:
+        return make_json_response(False)  # Todo Throw error
+
     content = request.get_json()["content"]
     try:
         return make_json_response(FileTypeFactory.from_type(FileTypeName(type_name), content).is_valid())
