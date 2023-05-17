@@ -16,7 +16,11 @@ class OcYamlEnvObjFileType(FileType, ABC):
         """
         Checks if the content is a valid oc yaml env obj file.
         """
-        yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
+        try:
+            yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
+        except yaml.YAMLError:
+            return False
+
         if yaml_content is None:
             return False
 

@@ -16,8 +16,9 @@ class OcYamlEnvListFileType(FileType, ABC):
         """
         Checks if the content is a valid oc yaml env list file.
         """
-        yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
-        if yaml_content is None:
+        try:
+            yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
+        except yaml.YAMLError:
             return False
 
         if not isinstance(yaml_content, list):

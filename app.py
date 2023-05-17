@@ -8,14 +8,19 @@ from src.models.file_values import FileValues
 from src.models.comparer import ComparedValues
 from src.models.values import UploadedValues
 from src.helpers import get_server_route
-from src.requests import IsFileTypeRequest
+from src.requests import IsFileTypeRequest, GetFileTypeRequest
 
 app = Flask(__name__)
 
 
-def make_json_response(data):
-    # Todo Update structure
-    return json.jsonify(AppResponse(data).serialized)
+def make_validation_json_response(errors, service=None):
+    message = "Validation error, please validate your request"
+    validation_error_status_code = 422
+    return make_json_response(errors, message, validation_error_status_code, service)
+
+
+def make_json_response(data, message=None, status_code=200, service=None):
+    return json.jsonify(AppResponse(data, message, status_code, service).serialized), status_code
 
 
 @app.route("/", methods=["GET"])
@@ -81,14 +86,15 @@ def get_file_values():
     # try:
     values = FileTypeFactory.from_type(FileTypeName(type_name), content).get_values(file_name)
     return make_json_response(values.serialized)
-# except Exception as e:
-#     Todo Throw error
-# return make_json_response(None)
 
 
 @app.route("/file/type/get", methods=["POST"])
 def get_file_type():
-    # Todo Validate structure Has "content" key
+    service = "get_file_type"
+    errors = GetFileTypeRequest().validate(request.get_json())
+    if errors:
+        return make_validation_json_response(errors, service=service)
+
     content = request.get_json()["content"]
 
     def make_is_type_request(type_name, file_content) -> bool:
@@ -97,32 +103,33 @@ def get_file_type():
         })
         return is_type_request.json()["data"]
 
-    types_to_check = [
-        FileTypeName.DOTENV.value,
-        FileTypeName.OC_YAML_ENV_OBJ.value,
-        FileTypeName.OC_YAML_ENV_LIST.value,
-        FileTypeName.OC_YAML_CONFIGMAP.value
-    ]
-
-    for t in types_to_check:
+    for t in FileTypeName.available_list():
         if make_is_type_request(t, content):
-            return make_json_response(t)
+            message = f"File type is {t}"
+            return make_json_response(t, message=message, service=service)
 
-    return make_json_response(FileTypeName.NONE.value)  # Todo error?
+    # Todo error?
+    return make_json_response(FileTypeName.NONE.value)
 
 
 @app.route("/file/type/is/<type_name>", methods=["POST"])
 def is_file_type(type_name):
+    service = "is_file_type"
     errors = IsFileTypeRequest().validate(request.get_json() | {"type_name": type_name})
     if errors:
-        return make_json_response(False)  # Todo Throw error
+        return make_validation_json_response(errors, service=service)
 
     content = request.get_json()["content"]
-    try:
-        return make_json_response(FileTypeFactory.from_type(FileTypeName(type_name), content).is_valid())
-    except Exception as e:
-        # Todo Throw error
-        return make_json_response(False)
+    is_valid = FileTypeFactory.from_type(FileTypeName(type_name), content).is_valid()
+
+    # Checks the article to use in the response
+    vowels = ('a', 'e', 'i', 'o', 'u')  # No need to check for uppercase
+    starts_with_vowel = type_name[0].lower() in vowels
+    article = "an" if starts_with_vowel else "a"
+
+    # Message depending on the file if it's valid or not
+    message = f"The file is {article if is_valid else f'not {article}'} {type_name}"
+    return make_json_response(is_valid, message=message, service=service)
 
 
 @app.route("/compare/values", methods=["POST"])
