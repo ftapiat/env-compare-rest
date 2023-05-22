@@ -1,7 +1,8 @@
+import marshmallow
 import requests
-from flask import Flask, url_for, request, json
+from flask import Flask, url_for, request
 
-from src.models.responses import AppResponse
+from src.models.responses import AppResponse, AppResponseStatus
 from src.models.files import UploadedFiles
 from src.models.file_types import FileTypeName, FileTypeFactory
 from src.models.file_values import FileValues
@@ -20,7 +21,14 @@ def make_validation_json_response(errors, service=None):
 
 
 def make_json_response(data, message=None, status_code=200, service=None):
-    return json.jsonify(AppResponse(data, message, status_code, service).serialized), status_code
+    app_response = AppResponse().load({
+        "data": data,
+        "message": message,
+        "status_code": status_code,
+        "service": service
+    })
+    del app_response["status_code"]
+    return app_response, status_code
 
 
 @app.route("/", methods=["GET"])
@@ -78,12 +86,13 @@ def get_file_values():
     file_name = file["name"]
 
     # Get file type
-    get_type_request = requests.post(get_server_route(url_for("get_file_type")), json={
-        "content": content
-    })
-    type_name = get_type_request.json()["data"]
+    get_type_request_body: dict = GetFileTypeRequest(unknown=marshmallow.EXCLUDE).load(file)
+    get_type_request = requests.post(get_server_route(url_for("get_file_type")), json=get_type_request_body)
+    get_type_response = get_type_request.json()  # Todo parse with Schema
+    if get_type_response["status"] is AppResponseStatus.ERROR.value:
+        return get_type_response, get_type_request.status_code
 
-    # try:
+    type_name = get_type_response["data"]
     values = FileTypeFactory.from_type(FileTypeName(type_name), content).get_values(file_name)
     return make_json_response(values.serialized)
 
@@ -108,8 +117,9 @@ def get_file_type():
             message = f"File type is {t}"
             return make_json_response(t, message=message, service=service)
 
-    # Todo error?
-    return make_json_response(FileTypeName.NONE.value)
+    # ERROR Because no type was found
+    error_message = "Couldn't identify file type"
+    return make_json_response(None, message=error_message, status_code=400, service=service)
 
 
 @app.route("/file/type/is/<type_name>", methods=["POST"])

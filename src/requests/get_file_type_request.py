@@ -1,13 +1,6 @@
-from marshmallow import Schema, fields, validates, ValidationError
+from marshmallow import Schema, fields
+from .validations import content_validation
 
 
 class GetFileTypeRequest(Schema):
-    content = fields.Str(required=True)
-
-    @validates('content')
-    def validate_content(self, content):
-        if content.strip() == '':
-            raise ValidationError('Content is required')
-
-        if len(content) > 1000000:
-            raise ValidationError('Content is too long')
+    content = fields.Str(required=True, validate=content_validation)
