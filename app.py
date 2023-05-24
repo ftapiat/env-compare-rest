@@ -2,14 +2,14 @@ import marshmallow
 import requests
 from flask import Flask, url_for, request
 
-from src.models.responses import AppResponse, AppResponseStatus
+from src.models.responses import AppResponseStatus, AppResponseSchema
 from src.models.files import UploadedFiles
 from src.models.file_types import FileTypeName, FileTypeFactory
 from src.models.file_values import FileValues
 from src.models.comparer import ComparedValues
 from src.models.values import UploadedValues
 from src.helpers import get_server_route
-from src.requests import IsFileTypeRequest, GetFileTypeRequest
+from src.requests import IsFileTypeRequest, GetFileTypeRequest, GetFileValuesRequest, GetFileValuesRequestSchema
 
 app = Flask(__name__)
 
@@ -21,14 +21,14 @@ def make_validation_json_response(errors, service=None):
 
 
 def make_json_response(data, message=None, status_code=200, service=None):
-    app_response = AppResponse().load({
+    schema = AppResponseSchema()
+    app_response = schema.load({
         "data": data,
         "message": message,
         "status_code": status_code,
         "service": service
     })
-    del app_response["status_code"]
-    return app_response, status_code
+    return schema.dump(app_response), status_code
 
 
 @app.route("/", methods=["GET"])
@@ -80,20 +80,22 @@ def get_file_differences():
 
 @app.route("/file/values/get", methods=["POST"])
 def get_file_values():
-    # Todo Validate structure
-    file = request.get_json()["file"]
-    content = file["content"]
-    file_name = file["name"]
+    schema = GetFileValuesRequestSchema()
+    try:
+        get_file_values_request: GetFileValuesRequest = schema.load(request.get_json())
+    except marshmallow.ValidationError as err:
+        return make_validation_json_response(err.messages, "get_file_values")
 
     # Get file type
-    get_type_request_body: dict = GetFileTypeRequest(unknown=marshmallow.EXCLUDE).load(file)
+    file = get_file_values_request.file
+    get_type_request_body: dict = GetFileTypeRequest(unknown=marshmallow.EXCLUDE).dump(file)
     get_type_request = requests.post(get_server_route(url_for("get_file_type")), json=get_type_request_body)
-    get_type_response = get_type_request.json()  # Todo parse with Schema
-    if get_type_response["status"] is AppResponseStatus.ERROR.value:
+    get_type_response = AppResponseSchema().load(get_type_request.json())
+    if get_type_response.status is AppResponseStatus.ERROR.value:
         return get_type_response, get_type_request.status_code
 
-    type_name = get_type_response["data"]
-    values = FileTypeFactory.from_type(FileTypeName(type_name), content).get_values(file_name)
+    type_name: str = get_type_response.data  # Todo Maybe change for generic Type
+    values = FileTypeFactory.from_type(FileTypeName(type_name), file.content).get_values(file.name)
     return make_json_response(values.serialized)
 
 
