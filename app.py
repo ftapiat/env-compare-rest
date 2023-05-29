@@ -5,11 +5,11 @@ from flask import Flask, url_for, request
 from src.models.responses import AppResponseStatus, AppResponseSchema
 from src.models.files import UploadedFiles
 from src.models.file_types import FileTypeName, FileTypeFactory
-from src.models.file_values import FileValues
+from src.models.file_values import FileValues, FileValuesSchema
 from src.models.comparer import ComparedValues
-from src.models.values import UploadedValues
 from src.helpers import get_server_route
-from src.requests import IsFileTypeRequest, GetFileTypeRequest, GetFileValuesRequest, GetFileValuesRequestSchema
+from src.requests import IsFileTypeRequest, GetFileTypeRequest, GetFileValuesRequest, GetFileValuesRequestSchema, \
+    GetValueDifferencesRequestSchema, GetValueDifferencesRequest
 
 app = Flask(__name__)
 
@@ -80,11 +80,12 @@ def get_file_differences():
 
 @app.route("/file/values/get", methods=["POST"])
 def get_file_values():
-    schema = GetFileValuesRequestSchema()
+    service = "get_file_values"
+    request_schema = GetFileValuesRequestSchema()
     try:
-        get_file_values_request: GetFileValuesRequest = schema.load(request.get_json())
+        get_file_values_request: GetFileValuesRequest = request_schema.load(request.get_json())
     except marshmallow.ValidationError as err:
-        return make_validation_json_response(err.messages, "get_file_values")
+        return make_validation_json_response(err.messages, service)
 
     # Get file type
     file = get_file_values_request.file
@@ -96,7 +97,7 @@ def get_file_values():
 
     type_name: str = get_type_response.data  # Todo Maybe change for generic Type
     values = FileTypeFactory.from_type(FileTypeName(type_name), file.content).get_values(file.name)
-    return make_json_response(values.serialized)
+    return make_json_response(FileValuesSchema().dump(values), message="error_message", service=service)
 
 
 @app.route("/file/type/get", methods=["POST"])
@@ -146,7 +147,6 @@ def is_file_type(type_name):
 
 @app.route("/compare/values", methods=["POST"])
 def get_value_differences():
-    # Todo Validate structure
-    values = UploadedValues(request.get_json()["values"])
+    values: GetValueDifferencesRequest = GetValueDifferencesRequestSchema().load(request.get_json())
     differences = ComparedValues.from_files(values.file_1, values.file_2)
     return make_json_response(differences.serialized)
