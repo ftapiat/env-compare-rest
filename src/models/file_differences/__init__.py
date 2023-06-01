@@ -1,2 +1,2 @@
-from .key_differences import KeyDifferences, KeyDifferencesGenerator
-from .value_differences import ValueDifferences, ValueDifferencesGenerator
+from .key import *
+from .value import *

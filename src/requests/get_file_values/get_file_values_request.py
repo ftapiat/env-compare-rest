@@ -5,5 +5,5 @@ class GetFileValuesRequestFile:
 
 
 class GetFileValuesRequest:
-    def __init__(self, file: dict):
-        self.file = GetFileValuesRequestFile(**file)
+    def __init__(self, file: GetFileValuesRequestFile):
+        self.file = file

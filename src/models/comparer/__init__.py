@@ -1,1 +1,2 @@
 from .compared_values import ComparedValues
+from .compared_values_schema import ComparedValuesSchema
