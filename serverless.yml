@@ -1,0 +1,32 @@
+service: env-compare-rest
+frameworkVersion: '3'
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  memorySize: 1536
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-wsgi
+  - serverless-python-requirements
+custom:
+  wsgi:
+    app: app.app
+    packRequirements: false
+functions:
+  app:
+    handler: wsgi_handler.handler
+    events:
+      - http: ANY /
+      - http: ANY /{proxy+}
+    timeout: 15
+    url: true
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!venv/**'
+    - '!.github/**'
