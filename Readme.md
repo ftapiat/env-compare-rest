@@ -1,62 +1,61 @@
-Este proyecto usa Python3.9
+This project uses Python3.9
 
-## Instalación
+## Install
 
-- Instalar venv (Usar "python" o "python3" si no funciona "python3.9")
+- Install venv (Use the "python" or "python3" command. If neither work, use "python3.9")
 ```bash
 python3.9 -m venv ./venv
 ```
 
-- Entrar al entorno virtual (En Ubuntu)
+- Enter the virtual env
 ```bash
 . venv/bin/activate
 ```
 
-- Instalar dependencias python
+- Install python dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-- Instalar serverless de forma global
+- Install serverless globally using npm
 ```bash
 npm install -g serverless
 ```
 
-- Instalar dependencias serverless
+- Install project dependencies (serverless plugins)
 ```bash
 npm install
 ```
 
-- Crear archivo .env con las variables de entorno
+- Create .env.local file with the environment variables
 ```bash
 cp .env.example .env.local
 ```
 
-## Ejecución
+## Run project
 
-- Ejecutar localmente
+- Run the project locally
 ```bash
 sls wsgi serve --stage local
-# Agregar [-p NUMERO] para cambiar el puerto
+# Add [-p NUMBER] to change the port
 ```
 
-- Desplegar a AWS (Esto requerirá un archivo .env con el stage [Ejemplo, .env.dev])
+- Deploy to AWS (This will require a .env file with the stage [Example, .env.dev])
 ```bash
 sls deploy
 
-# O espeficicando el stage: dev, prod, etc
+# Or specifying the stage: dev, prod, etc
 sls deploy --stage dev --verbose 
 ```
 
+## Other commands
 
-## Otros comandos
-
-- Guardar dependencias en un archivo requirements.txt
+- Update requirements.txt
 ```bash
 pip freeze > requirements.txt
 ```
 
-- Elimina los servicios registrados por serverless
+- Remove the project from AWS by stage
 ```bash
 sls remove --stage dev
 ```
