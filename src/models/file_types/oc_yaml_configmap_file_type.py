@@ -4,9 +4,12 @@ from abc import ABC
 from ..file_values import FileValues
 from .file_type import FileType
 from .file_type_name import FileTypeName
+from .helpers import get_list_values_from_yaml_content
 
 
 class OcYamlConfigmapFileType(FileType, ABC):
+    yaml_object_key = "data"
+
     def __init__(self, content: str):
         file_type = FileTypeName.OC_YAML_CONFIGMAP
         super().__init__(file_type, content)
@@ -26,13 +29,18 @@ class OcYamlConfigmapFileType(FileType, ABC):
         if isinstance(yaml_content, str):
             return False
 
-        for key in yaml_content:
+        list_values: dict[str, any] = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key)
+
+        if list_values is None:
+            return False
+
+        for key in list_values:
             # Each key should be a string
             if not isinstance(key, str):
                 return False
 
             # Each value should be a string (or int which will be parsed later)
-            value = yaml_content.get(key)
+            value = list_values.get(key)
             if not isinstance(value, str) and not isinstance(value, int):
                 return False
 
@@ -44,10 +52,11 @@ class OcYamlConfigmapFileType(FileType, ABC):
         :param file_name:
         :return: Key value pairs of the file
         """
-        yaml_content: dict[str, str] = yaml.load(self.content, Loader=yaml.FullLoader)
+        yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
+        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key)
 
         values = []
-        for key in yaml_content:
+        for key in list_values:
             values.append({
                 "key": key,
                 "value": str(yaml_content.get(key))
