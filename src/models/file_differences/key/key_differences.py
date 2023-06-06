@@ -3,13 +3,6 @@ class KeyDifferences:
         self.file_1 = file_1
         self.file_2 = file_2
 
-    @property
-    def serialized(self):
-        return {
-            "file_1": self.file_1,
-            "file_2": self.file_2
-        }
-
 
 class KeyDifferencesGenerator:
     def __init__(self, file_1_values_list: list[dict[str, str]], file_2_values_list: list[dict[str, str]]):

@@ -14,15 +14,3 @@ class FileValues:
         self.file_name = file_name
         self.type_name = type_name
         self.values = values
-
-    @property
-    def serialized(self):
-        return {
-            "file_name": self.file_name,
-            "type_name": self.type_name.value,
-            "values": self.values
-        }
-
-    @staticmethod
-    def from_dict(data: dict[str, Any]):
-        return FileValues(data["file_name"], FileTypeName(data["type_name"]), data["values"])

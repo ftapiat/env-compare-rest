@@ -11,13 +11,6 @@ class ValueDifferencesContent:
         self.string = string
         self.index_differences = index_differences
 
-    @property
-    def serialized(self):
-        return {
-            "string": self.string,
-            "index_differences": self.index_differences
-        }
-
 
 class ValueDifferences:
     def __init__(self, key: str, file_1: ValueDifferencesContent, file_2: ValueDifferencesContent):
@@ -30,14 +23,6 @@ class ValueDifferences:
         self.key = key
         self.file_1 = file_1
         self.file_2 = file_2
-
-    @property
-    def serialized(self):
-        return {
-            "key": self.key,
-            "file_1": self.file_1.serialized,
-            "file_2": self.file_2.serialized
-        }
 
 
 class ValueDifferencesGenerator:
