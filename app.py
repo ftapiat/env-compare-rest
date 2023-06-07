@@ -149,7 +149,6 @@ def is_file_type(type_name):
 
     content = request.get_json()["content"]
     is_valid = FileTypeFactory.from_type(FileTypeName(type_name), content).is_valid()
-    print(type_name, is_valid)
 
     # Checks the article to use in the response
     vowels = ('a', 'e', 'i', 'o', 'u')  # No need to check for uppercase

@@ -54,7 +54,6 @@ class OcYamlConfigmapFileType(FileType, ABC):
         """
         yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
         list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key, dict)
-        print(list_values)
 
         values = []
         for key in list_values:
