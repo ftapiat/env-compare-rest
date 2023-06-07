@@ -29,7 +29,7 @@ class OcYamlConfigmapFileType(FileType, ABC):
         if isinstance(yaml_content, str):
             return False
 
-        list_values: dict[str, any] = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key)
+        list_values: dict[str, any] = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key, dict)
 
         if list_values is None:
             return False
@@ -53,13 +53,14 @@ class OcYamlConfigmapFileType(FileType, ABC):
         :return: Key value pairs of the file
         """
         yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
-        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key)
+        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key, dict)
+        print(list_values)
 
         values = []
         for key in list_values:
             values.append({
                 "key": key,
-                "value": str(yaml_content.get(key))
+                "value": str(list_values.get(key))
             })
 
         return FileValues(file_name, self.type_name, values)

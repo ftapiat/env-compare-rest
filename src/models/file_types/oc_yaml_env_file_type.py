@@ -63,7 +63,7 @@ class OcYamlEnvFileType(FileType, ABC):
         if yaml_content is None:
             return False
 
-        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key)
+        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key, list)
 
         if list_values is None:
             return False
@@ -77,6 +77,6 @@ class OcYamlEnvFileType(FileType, ABC):
         :return:
         """
         yaml_content = yaml.load(self.content, Loader=yaml.FullLoader)
-        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key)
+        list_values = get_list_values_from_yaml_content(yaml_content, self.yaml_object_key, list)
         values = openshift_get_values_from_list(list_values)
         return FileValues(file_name, self.type_name, values)
